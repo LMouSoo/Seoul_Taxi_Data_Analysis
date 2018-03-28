@@ -1,0 +1,29 @@
+{
+    gStyle->SetOptStat(0);
+
+    TFile f1("r7_fig_100km.root");
+
+    TH2D *h1 = (TH2D*)f1.Get("fig_7");
+
+    TH1D *PF1 = h1->ProfileX().ProjectionX();
+//    TH1D *PF3 = h3->ProfileX("3",1,-1,"").ProjectionX();
+//    TH1D *PF4 = h4->ProfileX("4",1,-1,"").ProjectionX();
+
+//    PF1->GetYaxis()->SetRangeUser(0,70000);
+//    PF1->GetXaxis()->SetRangeUser(0,40000);
+//    PF1->GetYaxis()->SetTitle("Travel distance (m)");
+//    PF1->GetXaxis()->SetTitle("Direct distance (m)");
+//    PF1->SetTitle("Fig.3");
+    PF1->Draw();
+    TF1 *ft1 = new TF1("ft1","[0]*(x**[1])+[3]",100,10000);
+    PF1->Fit("ft1","R");
+
+//    leg = new TLegend(0.7,0.8,0.9,0.9);
+//    leg->AddEntry(PF2,"Tokyo","l");
+//    leg->AddEntry(PF4,"Geneva","l");
+//    leg->AddEntry(PF1,"Seoul(2013)","l");
+//    leg->AddEntry(PF3,"Seoul(2017)","l");
+//    leg->AddEntry(PF3,"2017-Hapjeong Station Stationary time","l");
+//    leg->Draw();
+
+}

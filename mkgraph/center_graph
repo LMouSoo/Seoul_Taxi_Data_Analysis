@@ -1,0 +1,31 @@
+{
+    gStyle->SetOptStat(0);
+
+    TFile f1("center_2013.root");
+
+    int day = 11;
+
+    TH1F *h1 = (TH1F*)f1.Get("2013_12_11_68");
+    TH1F *h2 = (TH1F*)f1.Get("2013_12_11_95");
+    TH1F *h3 = (TH1F*)f1.Get("2013_12_11_99");
+
+    h1->GetYaxis()->SetRangeUser(0,60000);
+    h1->GetYaxis()->SetTitle("Radius (m)");
+    h1->GetXaxis()->SetTitle("hour");
+    h1->SetTitle("Fig.1 (2013-12-11)");
+    h1->Draw("*C");
+
+    h2->SetLineColor(2);
+    h2.Draw("*csame");
+
+    h3->SetLineColor(6);
+    h3.Draw("*csame");
+
+    leg = new TLegend(0.7,0.8,0.9,0.9);
+    leg->AddEntry(h3,"#mu #pm 3#sigma (~99.73%)","l");
+    leg->AddEntry(h2,"#mu #pm 2#sigma (~95.44%)","l");
+    leg->AddEntry(h1,"#mu #pm 1#sigma (~68.26%)","l");
+    //leg->AddEntry(PF3,"Seoul(2017)","l");
+    leg->Draw();
+
+}
