@@ -1,0 +1,33 @@
+{
+    gStyle->SetOptStat(0);
+
+    TFile f1("1km_d_t.root");
+
+    TH2D *h1 = (TH2D*)f1.Get("fig_4_1");
+    
+    h1->GetYaxis()->SetTitle("P(L) (%)");
+    h1->GetXaxis()->SetTitle("L (m)");
+    h1->GetXaxis()->SetRangeUser(1000,90000);
+
+    TH2D *h2 = (TH2D*)f1.Get("fig_4_2");
+
+    //h2->GetYaxis()->SetRangeUser(0,20);
+    h2->GetXaxis()->SetRangeUser(10,200000);
+    h2->GetYaxis()->SetTitle("P(T) (%)");
+    h2->GetXaxis()->SetTitle("T (s)");
+    
+    h1->Draw();
+    //h2->Draw();
+    
+    TF1 *ft1 = new TF1("ft1","[0]*((x+[3])**[1])+[2]",1300,3500);
+    ft1->SetParLimits(2,0,100);
+    //ft1->SetParLimits(1,-10000,0);
+    //ft1->SetParLimits(0,0,10000);
+    h1->Fit("ft1","R");
+
+    TF1 *ft2 = new TF1("ft2","[0]*((x+[3])**[1])+[2]",200,10000);
+    //ft2->SetParameter(1,2.6);
+    ft2->SetParLimits(2,0,100);
+    //h2->Fit("ft2","R");
+
+}
