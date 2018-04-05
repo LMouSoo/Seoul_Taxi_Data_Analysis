@@ -8,11 +8,13 @@ start_time = time.time()
 
 #folder_name = ['2013-12-11/','2013-12-12/','2013-12-13/','2013-12-14/','2013-12-15/','2017-05-15/','2017-05-16/','2017-05-17/','2017-05-18/','2017-05-19/','2017-05-20/','2017-05-21/']
 folder_name = ['2017-05-15/','2017-05-16/','2017-05-17/','2017-05-18/','2017-05-19/','2017-05-20/','2017-05-21/']
-#folder_name = ['2017-05-15/']
+#folder_name = ['2017-05-21/']
 
 DAT_name = []
+#for i in range(8,9):
 for i in range(0,24):
     for n in range(0,6):
+#    for n in range(1,2):
         for t in [0,2,5,7]:
             if t == 0 or t == 5:
                 ss = 0
@@ -24,9 +26,9 @@ for i in range(0,24):
                 DAT_name.append("{}{}{}{}0.DAT".format(i,n,t,ss))
 
 D = {}
-fp = open("d5_fig_d_10.csv","w")
+fp = open("../dat/csv/d4_fig.csv","w")
 chk = 0
-chk_d = 100000
+chk_d = 1000
 for folder in folder_name :
     for DAT in DAT_name :
         filename = "/home/lms/traffic/source/"+folder+DAT
@@ -38,12 +40,22 @@ for folder in folder_name :
                     x = p[1]
                     y = p[2]
                     if taxi.chk_in_kor(x,y) :
+                        taxi_id = int(p[0])
                         if int(p[8]) :
-                            taxi_id = int(p[0])
                             if taxi_id in D:
-                                D[taxi_id].append((int(x),int(y),int(p[4])))
+                                try:
+                                    temp = D[taxi_id][-1]
+                                    current_t = taxi.int_to_datetime(int(p[4]))
+                                    chk_t = current_t - temp[2]
+                                    chk_t = chk_t.total_seconds()
+                                    if chk_t > 0 :
+                                        if abs((taxi.gps_to_d(temp[0],temp[1],x,y)/chk_t) - (int(p[6])*5/18)) < 10/6 :
+                                            D[taxi_id].append((int(x),int(y),current_t))
+                                except IndexError as e:
+                                    D[taxi_id].append((int(x),int(y),current_t))
                             else :
-                                D[taxi_id]=[(int(x),int(y),int(p[4]))]
+                                current_t = taxi.int_to_datetime(int(p[4]))
+                                D[taxi_id] = [(int(x),int(y),current_t)]
                         else :
                             if taxi_id in D:
                                 t_list = D[taxi_id]
@@ -53,7 +65,7 @@ for folder in folder_name :
                                     s_lat = t_list[0][1]
                                     pre_d0 = s_lon
                                     pre_d1 = s_lat
-                                    pre_t = taxi.int_to_datetime(t_list[0][2])
+                                    pre_t = t_list[0][2]
                                     temp_d = 0
                                     totl_d = 0
                                     d_to_d = 0
@@ -67,7 +79,7 @@ for folder in folder_name :
                                         pre_d1 = temp_d1
                                         if d_to_d > chk_d :
                                             prnt_d = totl_d / d_to_d * chk_d
-                                            temp_t = taxi.int_to_datetime(t_list[i][2])
+                                            temp_t = t_list[i][2]
                                             prnt_t = temp_t-pre_t
                                             prnt_t = prnt_t.total_seconds() * chk_d / d_to_d
                                             fp.write('{}, {}\n'.format(prnt_d, prnt_t))
